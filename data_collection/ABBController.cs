@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ABB.Robotics.Controllers.IOSystemDomain;
 
 namespace data_collection
 {
@@ -55,6 +56,14 @@ namespace data_collection
             var pos4 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "axis_pos4").Value.ToString();
             var pos5 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "axis_pos5").Value.ToString();
             var pos6 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "axis_pos6").Value.ToString();
+
+            var motor_torque1 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "motor_torque1").Value.ToString();
+            var motor_torque2 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "motor_torque2").Value.ToString();
+            var motor_torque3 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "motor_torque3").Value.ToString();
+            var motor_torque4 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "motor_torque4").Value.ToString();
+            var motor_torque5 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "motor_torque5").Value.ToString();
+            var motor_torque6 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "motor_torque6").Value.ToString();
+
             List<string> list = new List<string>();
             list.Add(torque1);
             list.Add(torque2);
@@ -74,10 +83,20 @@ namespace data_collection
             list.Add(pos4);
             list.Add(pos5);
             list.Add(pos6);
+            list.Add(motor_torque1);
+            list.Add(motor_torque2);
+            list.Add(motor_torque3);
+            list.Add(motor_torque4);
+            list.Add(motor_torque5);
+            list.Add(motor_torque6);
             return list;
         }
 
-
-
+        public float GetIOValue(int Select, string name)
+        {
+            Controller controller = GetController(Select);
+            Signal s =  controller.IOSystem.GetSignal(name);
+            return s.Value;
+        }
     }
 }
