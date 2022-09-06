@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PCSDK_WpfApp.Properties
+namespace data_collection.Properties
 {
 
 
