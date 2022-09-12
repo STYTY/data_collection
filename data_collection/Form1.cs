@@ -113,6 +113,13 @@ namespace data_collection
                         this.textBox22.Text = list[20];
                         this.textBox23.Text = list[19];
                         this.textBox24.Text = list[18];
+                        
+                        this.textBox25.Text = list[29];
+                        this.textBox26.Text = list[28];
+                        this.textBox27.Text = list[27];
+                        this.textBox28.Text = list[26];
+                        this.textBox29.Text = list[25];
+                        this.textBox30.Text = list[24];
                     }
             }
             catch (Exception err)

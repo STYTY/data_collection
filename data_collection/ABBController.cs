@@ -64,6 +64,13 @@ namespace data_collection
             var motor_torque5 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "motor_torque5").Value.ToString();
             var motor_torque6 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "motor_torque6").Value.ToString();
 
+            var ext_torque1 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "ext_torque1").Value.ToString();
+            var ext_torque2 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "ext_torque2").Value.ToString();
+            var ext_torque3 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "ext_torque3").Value.ToString();
+            var ext_torque4 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "ext_torque4").Value.ToString();
+            var ext_torque5 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "ext_torque5").Value.ToString();
+            var ext_torque6 = controller.Rapid.GetRapidData("T_ROB1", "GetTorqueValue", "ext_torque6").Value.ToString();
+
             List<string> list = new List<string>();
             list.Add(torque1);
             list.Add(torque2);
@@ -89,6 +96,13 @@ namespace data_collection
             list.Add(motor_torque4);
             list.Add(motor_torque5);
             list.Add(motor_torque6);
+            list.Add(ext_torque1);
+            list.Add(ext_torque2);
+            list.Add(ext_torque3);
+            list.Add(ext_torque4);
+            list.Add(ext_torque5);
+            list.Add(ext_torque6);
+
             return list;
         }
 

@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>aure2-8iajo-001.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ABB.Robotics.Controllers.PC">
       <HintPath>..\..\..\..\OneDrive - sjtu.edu.cn\桌面\pcsdk\ABB.Robotics.Controllers.PC.dll</HintPath>
@@ -88,6 +91,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="aure2-8iajo-001.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
