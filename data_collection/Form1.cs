@@ -1,22 +1,10 @@
-﻿using System;
+﻿using MqttConnector;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Json;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Linq;
-using ABB.Robotics.Controllers;
-using ABB.Robotics.Controllers.MotionDomain;
-using Assets.Scripts.Communication;
-using MQTTnet;
-using MQTTnet.Client;
-using static System.Json.JsonObject;
-
 
 namespace data_collection
 {
@@ -24,10 +12,18 @@ namespace data_collection
     {
         ABBController robot;
         List<string> errLog = new List<string>();
+        private bool _IsLoading = false;
+
+        MysqlConnector mc = new MysqlConnector();
+
         public Form1()
         {
             InitializeComponent();//InitUserFace
+            CheckForIllegalCrossThreadCalls = false;
             robot = new ABBController();
+
+            Utils.Initial();
+
             //robot.Scan();
             this.listView1.Items.Clear();
             robot.Scan();
@@ -87,7 +83,7 @@ namespace data_collection
             for (int i = 0; i < this.listView1.SelectedIndices.Count; i++)
             {
                 List<string> list = robot.GetTorqueValue(i);
-                if(list!= null && list.Count > 0)
+                if (list != null && list.Count > 0)
                 {
                     this.textBox1.Text = list[0];
                     this.textBox2.Text = list[1];
@@ -129,7 +125,7 @@ namespace data_collection
                     errLog = robot.errLogger(errLog, "未获取到相关torque数据");
                     richTextBox1.Lines = errLog.ToArray();
                 }
-              
+
             }
 
             //var mqttClient = new MqttFactory().CreateMqttClient();
@@ -330,41 +326,7 @@ namespace data_collection
             if (robot.controllers == null) return;
             for (int i = 0; i < robot.controllers.Count(); i++)
             {
-                List<string> list = new List<string> { "aiG1MtrlTmp",
-                            "aiG1MtrlPrs",
-                            "doG1Needle1",
-                            "doG1Needle2",
-                            "doG1Needle3",
-                            "doD1CircStart",
-                            "aiD1A_Torque",
-                            "aiD1A_DriveTmp",
-                            "aiD1MtrlSupPrs",
-                            "aiD1A_MtrlPrsOut",
-                            "aiD1B_MtrlPrsOut",
-                            "doD1A_ValveFill",
-                            "doD1B_ValveFill",
-                            "doD1A_ValveOut",
-                            "doD1B_ValveOut",
-                            "aoG1Fluid",
-                            "aoG1PRA_SP",
-                            "aiG1PRA_MotAct",
-                            "aiPelB_TmpSP",
-                            "aiPel1A_Tmp",
-                            "aiPel1B_Tmp",
-                            "aiPel1A_Water",
-                            "aiPel1B_Water",
-                            "aoPel1A_TmpSP",
-                            "aoPel1B_TmpSP",
-                            "aiPel1A_Tmp",
-                            "aiPel1B_Tmp",
-                            "aoG1MtrlTmpSP",
-                            "aiPel1A_FanCurr",
-                            "aiG1MtrlTmpSP",
-                            "aoG1MtrlTmpSP",
-                            "doD1ValveCirc",
-                            "go_cleantimes",
-                            "do13_JobInPro"
-                };
+                List<string> list = robot.GetIOList(i);
                 List<String> list1 = new List<String>();
                 for (int j = 0; j < list.Count; j++)
                 {
@@ -385,8 +347,74 @@ namespace data_collection
                     this.listView2.Items.Add(item);
                 }
             }
-            errLog = robot.errLogger(errLog, "");
+            errLog = robot.errLogger(errLog, "读取io");
             richTextBox1.Lines = errLog.ToArray();
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            ThreadStart thStart1 = new ThreadStart(CollectIO);//threadStart委托 
+            Thread thread1 = new Thread(thStart1);
+
+            //ThreadStart thStart2 = new ThreadStart(CollectTorque);//threadStart委托 
+            //Thread thread2 = new Thread(thStart2);
+
+            thread1.Start();
+        }
+
+
+
+
+
+        private void CollectIO()
+        {
+            errLog = robot.errLogger(errLog, "开始记录IO");
+            richTextBox1.Lines = errLog.ToArray();
+            _IsLoading = true;
+
+            MqttConnector.connector.Mqtt.Connect();
+
+            string topic = "v1/devices/me/telemetry";
+            while (true)
+            {
+                if (_IsLoading)
+                {
+                    for (int i = 0; i < this.listView1.SelectedIndices.Count; i++)
+                    {
+                        JsonObject json = robot.GetIOValueList(i);
+                        MqttConnector.connector.Mqtt.Publish(topic, json.ToString(), 0);
+                        JsonObject json1 = robot.GetTorqueList(i);
+                        if (json1 == null)
+                        {
+                            break;
+                        }
+                        MqttConnector.connector.Mqtt.Publish(topic, json1.ToString(), 0);
+                    };
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    MqttConnector.connector.Mqtt.Disconnect();
+                    break;
+                }
+
+            }
+        }
+
+
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            _IsLoading = false;
+            errLog = robot.errLogger(errLog, "停止记录");
+            richTextBox1.Lines = errLog.ToArray();
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+            richTextBox1.SelectionStart = richTextBox1.Text.Length; //Set the current caret position at the end
+            richTextBox1.ScrollToCaret(); //Now scroll it automatically
 
         }
     }

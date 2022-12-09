@@ -1,11 +1,11 @@
-﻿using ABB.Robotics.Controllers.Discovery;
-using ABB.Robotics.Controllers;
+﻿using ABB.Robotics.Controllers;
+using ABB.Robotics.Controllers.Discovery;
+using ABB.Robotics.Controllers.IOSystemDomain;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ABB.Robotics.Controllers.IOSystemDomain;
+using System.Json;
 
 namespace data_collection
 {
@@ -113,12 +113,112 @@ namespace data_collection
 
             return list;
         }
+        public JsonObject GetTorqueList(int Select)
+        {
+            JsonObject json = new JsonObject();
+            try
+            {
+                List<string> list = GetTorqueValue(Select);
+
+                json["torque1"] = list[0];
+                json["torque2"] = list[1];
+                json["torque3"] = list[2];
+                json["torque4"] = list[3];
+                json["torque5"] = list[4];
+                json["torque6"] = list[5];
+                json["speed1"] = list[6];
+                json["speed2"] = list[7];
+                json["speed3"] = list[8];
+                json["speed4"] = list[9];
+                json["speed5"] = list[10];
+                json["speed6"] = list[11];
+                json["pos1"] = list[12];
+                json["pos2"] = list[13];
+                json["pos3"] = list[14];
+                json["pos4"] = list[15];
+                json["pos5"] = list[16];
+                json["pos6"] = list[17];
+                json["motor_torque1"] = list[18];
+                json["motor_torque2"] = list[19];
+                json["motor_torque3"] = list[20];
+                json["motor_torque4"] = list[21];
+                json["motor_torque5"] = list[22];
+                json["motor_torque6"] = list[23];
+                json["ext_torque1"] = list[24];
+                json["ext_torque2"] = list[25];
+                json["ext_torque3"] = list[26];
+                json["ext_torque4"] = list[27];
+                json["ext_torque5"] = list[28];
+                json["ext_torque6"] = list[29];
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            return json;
+        }
 
         public float GetIOValue(int Select, string name)
         {
             Controller controller = GetController(Select);
             Signal s = controller.IOSystem.GetSignal(name);
             return s.Value;
+        }
+
+        public List<string> GetIOList(int Select)
+        {
+            string jsonfile = @".\config.json"; ;//JSON文件路径
+            using (System.IO.StreamReader file = System.IO.File.OpenText(jsonfile))
+            {
+                using (JsonTextReader reader = new JsonTextReader(file))
+                {
+                    JObject o = (JObject)JToken.ReadFrom(reader);
+                    var value = o["io"].ToString();
+                    var v = JsonConvert.DeserializeObject<List<string>>(value);
+                    return v;
+                }
+            }
+
+            //List<String> IOlistValue = new List<String>();
+            //for (int j = 0; j < IOlist.Count; j++)
+            //{
+            //    var signal = GetController(Select).IOSystem.GetSignal(IOlist[j]);
+            //    float value;
+            //    if (signal == null)
+            //    {
+            //        value = 0;
+            //    }
+            //    else
+            //    {
+            //        value = signal.Value;
+            //    }
+            //    IOlistValue.Add(value.ToString());
+            //}
+            //Thread.Sleep(3000);
+            //return IOlistValue;
+        }
+
+        public JsonObject GetIOValueList(int Select)
+        {
+
+            JsonObject json = new JsonObject();
+            List<string> list = GetIOList(Select);
+            for (int j = 0; j < list.Count; j++)
+            {
+                var signal = GetController(Select).IOSystem.GetSignal(list[j]);
+                float value;
+                if (signal == null)
+                {
+                    value = 0;
+                }
+                else
+                {
+                    value = signal.Value;
+                }
+                json[list[j]] = value;
+            }
+            return json;
         }
     }
 }

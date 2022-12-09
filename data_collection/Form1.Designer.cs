@@ -108,6 +108,8 @@
             this.label30 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
             this.label32 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listView1
@@ -193,11 +195,12 @@
             // richTextBox1
             // 
             this.richTextBox1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.richTextBox1.Location = new System.Drawing.Point(12, 1146);
+            this.richTextBox1.Location = new System.Drawing.Point(12, 1150);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(1397, 280);
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
+            this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             // 
             // button2
             // 
@@ -686,7 +689,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(1812, 1325);
+            this.button3.Location = new System.Drawing.Point(1800, 1309);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(173, 101);
             this.button3.TabIndex = 58;
@@ -802,11 +805,33 @@
             this.label32.TabIndex = 59;
             this.label32.Text = "extTorque1";
             // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(2029, 1309);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(173, 101);
+            this.button4.TabIndex = 71;
+            this.button4.Text = "开始记录";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(2250, 1309);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(173, 101);
+            this.button5.TabIndex = 72;
+            this.button5.Text = "停止记录";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2460, 1452);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.textBox25);
             this.Controls.Add(this.textBox26);
             this.Controls.Add(this.textBox27);
@@ -965,6 +990,8 @@
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
     }
 }
 
