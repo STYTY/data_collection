@@ -182,7 +182,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(1812, 1336);
+            this.button1.Location = new System.Drawing.Point(1578, 1169);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(173, 101);
             this.button1.TabIndex = 1;
@@ -193,7 +193,7 @@
             // richTextBox1
             // 
             this.richTextBox1.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.richTextBox1.Location = new System.Drawing.Point(12, 1169);
+            this.richTextBox1.Location = new System.Drawing.Point(12, 1146);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(1397, 280);
             this.richTextBox1.TabIndex = 2;
@@ -201,7 +201,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(2040, 1336);
+            this.button2.Location = new System.Drawing.Point(1578, 1309);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(173, 101);
             this.button2.TabIndex = 4;
@@ -686,7 +686,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(2268, 1336);
+            this.button3.Location = new System.Drawing.Point(1812, 1325);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(173, 101);
             this.button3.TabIndex = 58;
@@ -876,7 +876,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.listView1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "I/O Reader";
             this.ResumeLayout(false);
