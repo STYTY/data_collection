@@ -5,6 +5,14 @@ using System.Json;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using ABB.Robotics.Controllers.EventLogDomain;
+using MySqlX.XDevAPI;
+using S7;
+using S7.Net;
+using ABB.Robotics.Controllers.Configuration;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
+using System.Text;
+using Org.BouncyCastle.Utilities;
 
 namespace data_collection
 {
@@ -16,12 +24,14 @@ namespace data_collection
 
         MysqlConnector mc = new MysqlConnector();
 
+
         public Form1()
         {
             InitializeComponent();//InitUserFace
             CheckForIllegalCrossThreadCalls = false;
             robot = new ABBController();
 
+            // mqtt start
             Utils.Initial();
 
             //robot.Scan();
@@ -39,7 +49,7 @@ namespace data_collection
                 item.SubItems.Add(robot.controllers[i].SystemName);
                 item.SubItems.Add(robot.controllers[i].Version.ToString());
                 item.SubItems.Add(robot.controllers[i].ControllerName);
-                item.SubItems.Add(robot.GetController(i).OperatingMode.ToString());
+                //item.SubItems.Add(robot.GetController(i).OperatingMode.ToString());
                 item.SubItems.Add(robot.controllers[i].SystemId.ToString());
                 this.listView1.Items.Add(item);
                 item.Tag = robot.controllers[i];
@@ -82,7 +92,7 @@ namespace data_collection
         {
             for (int i = 0; i < this.listView1.SelectedIndices.Count; i++)
             {
-                List<string> list = robot.GetTorqueValue(i);
+                List<string> list = robot.GetTorqueValue(this.listView1.SelectedIndices[0]);
                 if (list != null && list.Count > 0)
                 {
                     this.textBox1.Text = list[0];
@@ -324,13 +334,13 @@ namespace data_collection
             this.listView2.Items.Clear();
             ListViewItem item = null;
             if (robot.controllers == null) return;
-            for (int i = 0; i < robot.controllers.Count(); i++)
+            for (int i = 0; i < this.listView1.SelectedIndices.Count; i++)
             {
-                List<string> list = robot.GetIOList(i);
+                List<string> list = robot.GetIOList(this.listView1.SelectedIndices[0]);
                 List<String> list1 = new List<String>();
                 for (int j = 0; j < list.Count; j++)
                 {
-                    var signal = robot.GetController(i).IOSystem.GetSignal(list[j]);
+                    var signal = robot.GetController(this.listView1.SelectedIndices[0]).IOSystem.GetSignal(list[j]);
                     float value;
                     if (signal == null)
                     {
@@ -374,28 +384,66 @@ namespace data_collection
             _IsLoading = true;
 
             MqttConnector.connector.Mqtt.Connect();
-
             string topic = "v1/devices/me/telemetry";
+
+            short Rack = 0, Slot = 2; // default for S7300
+            // s7 connect
+            var plc = new Plc(CpuType.S7300, "172.47.102.10", Rack, Slot);
+            try
+            {
+                plc.Open();
+            }
+            catch (Exception)
+            {
+                //Console.WriteLine($"连接到PLC设备失败：IsConnect={plc.IsConnected}");
+                errLog = robot.errLogger(errLog, $"连接到PLC设备失败：IsConnect={plc.IsConnected}");
+                richTextBox1.Lines = errLog.ToArray();
+                plc.Close();
+                return;
+            }
+            
+           
+
+
             while (true)
             {
                 if (_IsLoading)
                 {
                     for (int i = 0; i < this.listView1.SelectedIndices.Count; i++)
                     {
-                        JsonObject json = robot.GetIOValueList(i);
+                        ABB.Robotics.Controllers.ControllerState state = robot.GetController(this.listView1.SelectedIndices[0]).State;
+                        ABB.Robotics.Controllers.ControllerOperatingMode operatingMode = robot.GetController(this.listView1.SelectedIndices[0]).OperatingMode;
+
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject["state"] = state.ToString();
+                        jsonObject["operatingMode"] = operatingMode.ToString();
+
+                        // plc
+                        // DWord
+                        var text = plc.ReadBytes(DataType.DataBlock, 230, 1208, 4);
+                        string type_code = Encoding.UTF8.GetString(text);
+                        var skid_no = (ushort)plc.Read("DB230.DBW1218.0"); // correct
+                        jsonObject["type_code"] = type_code.ToString();
+                        jsonObject["skid_no"] = skid_no.ToString();
+
+                        MqttConnector.connector.Mqtt.Publish(topic, jsonObject.ToString(), 0);
+                        // io
+                        JsonObject json = robot.GetIOValueList(this.listView1.SelectedIndices[0]);
                         MqttConnector.connector.Mqtt.Publish(topic, json.ToString(), 0);
-                        JsonObject json1 = robot.GetTorqueList(i);
+                        // torque
+                        JsonObject json1 = robot.GetTorqueList(this.listView1.SelectedIndices[0]);
                         if (json1 == null)
                         {
                             break;
                         }
                         MqttConnector.connector.Mqtt.Publish(topic, json1.ToString(), 0);
                     };
-                    Thread.Sleep(1000);
+                    Thread.Sleep(350);
                 }
                 else
                 {
                     MqttConnector.connector.Mqtt.Disconnect();
+                    plc.Close();
                     break;
                 }
 
@@ -415,6 +463,122 @@ namespace data_collection
         {
             richTextBox1.SelectionStart = richTextBox1.Text.Length; //Set the current caret position at the end
             richTextBox1.ScrollToCaret(); //Now scroll it automatically
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            errLog = robot.errLogger(errLog, "读取log");
+            richTextBox1.Lines = errLog.ToArray();
+            if (robot.controllers == null) return;
+
+            Control.CheckForIllegalCrossThreadCalls = false;
+            Thread thread = new Thread(getEventLog);
+            thread.IsBackground = true;
+            thread.Start();
+        }
+
+        private void getEventLog()
+        {
+            _IsLoading = true;
+            string topic = "v1/devices/me/telemetry";
+
+            while (true)
+            {
+                int i = 0;
+                int LogTotalSize = 0;
+                for (int j = 0; j < this.listView1.SelectedIndices.Count; j++)
+                {
+                    if (_IsLoading)
+                    {
+                        EventLogCategory[] _cats = robot.GetController(this.listView1.SelectedIndices[0]).EventLog.GetCategories();
+                        foreach (EventLogCategory _cat in _cats)
+                        {
+                            foreach (EventLogMessage _msg in _cat.Messages)
+                            {
+                                JsonObject json = new JsonObject();
+                                json["type"] = _msg.Type.ToString();
+                                json["CategoryId"] = _msg.CategoryId.ToString();
+                                json["name"] = _msg.Name.ToString();
+                                json["timestamp"] = _msg.Timestamp.ToString();
+                                json["sequence_number"] = _msg.SequenceNumber.ToString();
+                                json["number"] = _msg.Number.ToString();
+                                json["title"] = _msg.Title.ToString();
+                                json["log_content"] = _msg.Body;
+                                // emsg.Timestamp + " " + emsg.Number+emsg.SequenceNumber+" "+emsg.Title 
+                                JsonObject log = new JsonObject();
+                                log["log"] = json;
+                                MqttConnector.connector.Mqtt.Publish(topic, log.ToString(), 0);
+                                ++i;
+                            }
+
+                            if (LogTotalSize < i)
+                            {
+                                errLog = robot.errLogger(errLog, "有新的记录");
+                                richTextBox1.Lines = errLog.ToArray();
+                            }
+                            LogTotalSize = i;
+                            Thread.Sleep(1000);
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        private void get_car_info()
+        {
+            _IsLoading = true;
+            short Rack = 0, Slot = 2; // default for S7300
+            using (var plc = new Plc(CpuType.S7300, "172.47.102.10", Rack, Slot))
+            {
+                try
+                {
+                    plc.Open();
+                    var type_code = (string)plc.Read("DB230.DBD1208.0");
+                    var skid_no = (ushort)plc.Read("DB230.DBW1218.0"); // correct
+                    errLog = robot.errLogger(errLog, $"车型：{type_code}，滑橇号：{skid_no}");
+                    richTextBox1.Lines = errLog.ToArray();
+                }
+                catch (Exception)
+                {
+                    errLog = robot.errLogger(errLog, $"连接到PLC设备失败：IsConnect={plc.IsConnected}");
+                    richTextBox1.Lines = errLog.ToArray();
+                    plc.Close();
+                    return;
+                }
+                plc.Close();
+            }
+
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            short Rack = 0, Slot = 2; // default for S7300
+            // s7 connect
+            var plc = new Plc(CpuType.S7300, "172.47.102.10", Rack, Slot);
+            try
+            {
+                plc.Open();
+                var type_code = plc.ReadBytes(DataType.DataBlock, 230, 1208, 4);
+                string text = Encoding.UTF8.GetString(type_code);
+                var skid_no = (ushort)plc.Read("DB230.DBW1218.0"); // correct
+                errLog = robot.errLogger(errLog, $"车型：{text}，滑橇号：{skid_no}");
+                richTextBox1.Lines = errLog.ToArray();
+            }
+            catch (Exception)
+            {
+                //Console.WriteLine($"连接到PLC设备失败：IsConnect={plc.IsConnected}");
+                errLog = robot.errLogger(errLog, $"连接到PLC设备失败：IsConnect={plc.IsConnected}");
+                richTextBox1.Lines = errLog.ToArray();
+                plc.Close();
+                return;
+            }
+            plc.Close();
 
         }
     }

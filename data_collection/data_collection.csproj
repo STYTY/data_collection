@@ -69,6 +69,9 @@
     <Reference Include="RobotStudio.Services.RobApi.Desktop">
       <HintPath>..\..\..\..\OneDrive - sjtu.edu.cn\桌面\pcsdk\RobotStudio.Services.RobApi.Desktop.dll</HintPath>
     </Reference>
+    <Reference Include="S7.Net, Version=0.16.0.0, Culture=neutral, PublicKeyToken=d5812d469e84c693, processorArchitecture=MSIL">
+      <HintPath>..\packages\S7netplus.0.16.0\lib\net452\S7.Net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>

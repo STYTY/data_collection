@@ -8,10 +8,10 @@ namespace MqttConnector
         private bool mqttEnable = true;
         private string mqttBroker = "localhost";
         private int mqttPort = 1883;
-        private string mqttUser = "robot1";
-        private string mqttPassword = "robot1";
+        private string mqttUser = "robot2";
+        private string mqttPassword = "robot2";
         private bool mqttTLS = false;
-        private string clientID = "robot1";
+        private string clientID = "robot2";
         private int keepAlive = 60;
 
 

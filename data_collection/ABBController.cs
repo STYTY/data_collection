@@ -39,40 +39,40 @@ namespace data_collection
             List<string> list = new List<string>();
             try
             {
-                var torque1 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_torque1").Value.ToString();
-                var torque2 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_torque2").Value.ToString();
-                var torque3 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_torque3").Value.ToString();
-                var torque4 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_torque4").Value.ToString();
-                var torque5 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_torque5").Value.ToString();
-                var torque6 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_torque6").Value.ToString();
+                var torque1 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_torque1").Value.ToString();
+                var torque2 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_torque2").Value.ToString();
+                var torque3 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_torque3").Value.ToString();
+                var torque4 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_torque4").Value.ToString();
+                var torque5 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_torque5").Value.ToString();
+                var torque6 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_torque6").Value.ToString();
+                    
+                var speed1 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_speed1").Value.ToString();
+                var speed2 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_speed2").Value.ToString();
+                var speed3 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_speed3").Value.ToString();
+                var speed4 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_speed4").Value.ToString();
+                var speed5 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_speed5").Value.ToString();
+                var speed6 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_speed6").Value.ToString();
 
-                var speed1 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_speed1").Value.ToString();
-                var speed2 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_speed2").Value.ToString();
-                var speed3 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_speed3").Value.ToString();
-                var speed4 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_speed4").Value.ToString();
-                var speed5 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_speed5").Value.ToString();
-                var speed6 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_speed6").Value.ToString();
+                var pos1 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_pos1").Value.ToString();
+                var pos2 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_pos2").Value.ToString();
+                var pos3 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_pos3").Value.ToString();
+                var pos4 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_pos4").Value.ToString();
+                var pos5 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_pos5").Value.ToString();
+                var pos6 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "axis_pos6").Value.ToString();
 
-                var pos1 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_pos1").Value.ToString();
-                var pos2 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_pos2").Value.ToString();
-                var pos3 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_pos3").Value.ToString();
-                var pos4 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_pos4").Value.ToString();
-                var pos5 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_pos5").Value.ToString();
-                var pos6 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "axis_pos6").Value.ToString();
+                var motor_torque1 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "GO_Torque1").Value.ToString();
+                var motor_torque2 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "GO_Torque2").Value.ToString();
+                var motor_torque3 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "GO_Torque3").Value.ToString();
+                var motor_torque4 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "GO_Torque4").Value.ToString();
+                var motor_torque5 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "GO_Torque5").Value.ToString();
+                var motor_torque6 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "GO_Torque6").Value.ToString();
 
-                var motor_torque1 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "motor_torque1").Value.ToString();
-                var motor_torque2 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "motor_torque2").Value.ToString();
-                var motor_torque3 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "motor_torque3").Value.ToString();
-                var motor_torque4 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "motor_torque4").Value.ToString();
-                var motor_torque5 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "motor_torque5").Value.ToString();
-                var motor_torque6 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "motor_torque6").Value.ToString();
-
-                var ext_torque1 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "ext_torque1").Value.ToString();
-                var ext_torque2 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "ext_torque2").Value.ToString();
-                var ext_torque3 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "ext_torque3").Value.ToString();
-                var ext_torque4 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "ext_torque4").Value.ToString();
-                var ext_torque5 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "ext_torque5").Value.ToString();
-                var ext_torque6 = controller.Rapid.GetRapidData("Data", "GetTorqueValue", "ext_torque6").Value.ToString();
+                var ext_torque1 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "ext_torque1").Value.ToString();
+                var ext_torque2 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "ext_torque2").Value.ToString();
+                var ext_torque3 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "ext_torque3").Value.ToString();
+                var ext_torque4 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "ext_torque4").Value.ToString();
+                var ext_torque5 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "ext_torque5").Value.ToString();
+                var ext_torque6 = controller.Rapid.GetRapidData("Torque", "TorqueCheck", "ext_torque6").Value.ToString();
 
                 list.Add(torque1);
                 list.Add(torque2);
